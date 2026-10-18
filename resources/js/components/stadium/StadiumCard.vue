@@ -1,135 +1,120 @@
 <template>
-  <div class="group bg-slate-900/90 rounded-2xl border border-slate-800/80 hover:border-emerald-500/50 shadow-xl hover:shadow-2xl hover:shadow-emerald-950/30 transition-all duration-300 flex flex-col overflow-hidden transform hover:-translate-y-1">
-    <!-- Top Image Container -->
-    <div class="relative h-56 w-full overflow-hidden bg-slate-950 cursor-pointer" @click="onCardClick">
+  <div class="group bg-white rounded-[36px] p-3 sm:p-4 border border-slate-200/80 shadow-[0_10px_30px_rgba(25,50,90,0.06)] hover:shadow-[0_18px_40px_rgba(25,50,90,0.12)] transition-all duration-300 flex flex-col justify-between">
+    <!-- Main Stadium Image with Large Rounded Corners & Progress Indicators -->
+    <div
+      class="relative h-72 sm:h-80 w-full rounded-[30px] overflow-hidden bg-slate-100 cursor-pointer select-none"
+      @click="onCardClick"
+    >
       <img
         :src="stadium.images[0]"
         :alt="isRtl ? stadium.nameAr : stadium.nameEn"
         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         loading="lazy"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+      <!-- Soft gradient overlay at bottom for text contrast -->
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20"></div>
 
-      <!-- Distance Badge (Calculated from user's location) -->
-      <div class="absolute top-3 start-3 z-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-slate-700/80 text-emerald-400 text-xs font-bold shadow-lg">
-        <Navigation class="w-3.5 h-3.5 animate-pulse text-emerald-400" />
-        <span>{{ distance }} {{ t.discovery.km }}</span>
+      <!-- Top Story/Carousel Indicator Bars (Directly matching reference center screen!) -->
+      <div class="absolute top-3.5 inset-x-6 flex items-center gap-1.5 z-20">
+        <div class="h-1 flex-1 bg-white rounded-full"></div>
+        <div class="h-1 flex-1 bg-white/50 rounded-full"></div>
+        <div class="h-1 flex-1 bg-white/50 rounded-full"></div>
       </div>
 
-      <!-- Rating Badge -->
-      <div class="absolute top-3 end-3 z-10 flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/90 text-slate-950 text-xs font-extrabold shadow-lg">
-        <Star class="w-3.5 h-3.5 fill-current" />
-        <span>{{ stadium.rating }}</span>
-        <span class="text-[10px] font-semibold opacity-80">({{ stadium.reviewsCount }})</span>
-      </div>
-
-      <!-- Format / Sport Tag -->
-      <div class="absolute bottom-3 start-3 z-10 flex items-center gap-2">
-        <span class="px-2.5 py-0.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-extrabold uppercase tracking-wide">
-          {{ stadium.format }}
-        </span>
-        <span v-if="stadium.isFifaCertified" class="px-2 py-0.5 rounded-lg bg-sky-500/90 text-white text-[11px] font-bold">
-          FIFA Pro
+      <!-- Top Badges: Distance & Format -->
+      <div class="absolute top-7 start-4 z-20 flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[#228ecb] text-xs font-extrabold shadow-sm flex items-center gap-1.5">
+          <Navigation class="w-3.5 h-3.5 fill-[#38a5e6] text-[#38a5e6]" />
+          <span>{{ distance }} {{ t.discovery.km }}</span>
         </span>
       </div>
-    </div>
 
-    <!-- Card Content -->
-    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-      <div>
-        <!-- Stadium Name with Direct External Facebook Link Integration -->
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex-1">
+      <div class="absolute top-7 end-4 z-20">
+        <span class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black shadow-sm flex items-center gap-1">
+          <Star class="w-3.5 h-3.5 fill-current" />
+          <span>{{ stadium.rating }}</span>
+        </span>
+      </div>
+
+      <!-- Bottom Pill Box inside Image (Directly matching reference center card's title bubble) -->
+      <div class="absolute bottom-3 inset-x-3 z-20">
+        <div class="bg-white/95 backdrop-blur-md rounded-[24px] p-3.5 px-4 shadow-lg flex items-center justify-between gap-3 border border-white/60">
+          <div class="flex-1 min-w-0">
+            <!-- Stadium Name with Direct External Facebook Link -->
             <div class="flex items-center gap-1.5 group/link">
               <a
                 :href="stadium.facebookUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-lg font-bold text-white hover:text-emerald-400 transition-colors inline-flex items-center gap-1.5"
+                class="text-base sm:text-lg font-black text-slate-900 hover:text-[#38a5e6] transition-colors truncate block"
                 :title="t.discovery.openFacebook"
                 @click.stop
               >
-                <span>{{ isRtl ? stadium.nameAr : stadium.nameEn }}</span>
-                <ExternalLink class="w-4 h-4 text-emerald-400 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all" />
+                {{ isRtl ? stadium.nameAr : stadium.nameEn }}
               </a>
+              <ExternalLink class="w-3.5 h-3.5 text-blue-500 opacity-60 group-hover/link:opacity-100 shrink-0" />
             </div>
-            <!-- City & Neighborhood -->
-            <div class="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
-              <MapPin class="w-3.5 h-3.5 text-slate-500" />
-              <span>{{ isRtl ? stadium.cityAr : stadium.cityEn }} • {{ isRtl ? stadium.districtAr : stadium.districtEn }}</span>
+
+            <!-- Subtitle info line: Format & Location -->
+            <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5 truncate">
+              <span class="font-bold text-slate-700">{{ stadium.format }}</span>
+              <span>•</span>
+              <span class="truncate">{{ isRtl ? stadium.districtAr : stadium.districtEn }}</span>
             </div>
           </div>
 
-          <!-- Official Facebook Button Icon -->
-          <a
-            :href="stadium.facebookUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="p-2 rounded-xl bg-blue-600/15 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 transition-all flex items-center justify-center shrink-0"
-            :title="t.discovery.openFacebook"
-            @click.stop
-          >
-            <!-- Facebook SVG -->
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-            </svg>
-          </a>
-        </div>
-
-        <!-- Surface details -->
-        <p class="text-xs text-slate-400 mt-2 line-clamp-1">
-          🌱 {{ isRtl ? stadium.surfaceAr : stadium.surfaceEn }}
-        </p>
-
-        <!-- Amenity Icons Grid -->
-        <div class="flex flex-wrap items-center gap-2 mt-3 text-[11px] text-slate-300">
-          <span v-if="stadium.amenities.nightLighting" class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/60 flex items-center gap-1">
-            <Zap class="w-3 h-3 text-amber-400" />
-            <span>{{ isRtl ? 'إضاءة ليلية' : 'Lighting' }}</span>
-          </span>
-          <span v-if="stadium.amenities.indoor" class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/60 flex items-center gap-1">
-            <Shield class="w-3 h-3 text-sky-400" />
-            <span>{{ isRtl ? 'مكيف' : 'Indoor' }}</span>
-          </span>
-          <span v-if="stadium.amenities.parking" class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/60 flex items-center gap-1">
-            <Car class="w-3 h-3 text-slate-400" />
-            <span>{{ isRtl ? 'مواقف' : 'Parking' }}</span>
-          </span>
-          <span v-if="stadium.amenities.showerRooms" class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/60 flex items-center gap-1">
-            <Droplets class="w-3 h-3 text-cyan-400" />
-            <span>{{ isRtl ? 'استحمام' : 'Showers' }}</span>
-          </span>
+          <!-- Price Tag Badge -->
+          <div class="text-end shrink-0 ps-2 border-s border-slate-200">
+            <span class="text-base sm:text-lg font-black text-[#258ecb] block leading-none">
+              {{ stadium.pricePerHour }}
+            </span>
+            <span class="text-[10px] font-semibold text-slate-400 uppercase">
+              {{ isRtl ? 'ريال/ساعة' : 'SAR/hr' }}
+            </span>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Price & Action Footer -->
-      <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-3">
-        <div>
-          <span class="text-xs text-slate-400 block">{{ isRtl ? 'السعر يبدأ من:' : 'Starts from:' }}</span>
-          <div class="flex items-baseline gap-1">
-            <span class="text-xl font-extrabold text-emerald-400">{{ stadium.pricePerHour }}</span>
-            <span class="text-xs font-semibold text-slate-400">{{ t.discovery.hourRate }}</span>
-          </div>
-        </div>
+    <!-- Below Card Action Section (Matching reference's circular action buttons & actions) -->
+    <div class="pt-3 px-1 flex items-center justify-between gap-3">
+      <!-- Amenities preview pills -->
+      <div class="flex items-center gap-1.5 overflow-hidden text-[11px] text-slate-600">
+        <span v-if="stadium.amenities.nightLighting" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-semibold flex items-center gap-1">
+          <Zap class="w-3 h-3 text-amber-500" />
+          <span>{{ isRtl ? 'إضاءة' : 'Light' }}</span>
+        </span>
+        <span v-if="stadium.amenities.indoor" class="px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 font-semibold flex items-center gap-1">
+          <Shield class="w-3 h-3 text-[#38a5e6]" />
+          <span>{{ isRtl ? 'مكيف' : 'AC' }}</span>
+        </span>
+        <span v-if="stadium.amenities.parking" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-semibold flex items-center gap-1">
+          <Car class="w-3 h-3 text-slate-500" />
+          <span>{{ isRtl ? 'مواقف' : 'Parking' }}</span>
+        </span>
+      </div>
 
-        <div class="flex items-center gap-1.5">
-          <button
-            @click.stop="$emit('call-venue', stadium)"
-            class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-            :title="t.discovery.callVenue"
-          >
-            <Phone class="w-4 h-4 text-emerald-400" />
-          </button>
+      <!-- Action Buttons Pair -->
+      <div class="flex items-center gap-2 shrink-0">
+        <!-- Call Venue Quick Button -->
+        <a
+          :href="`tel:${stadium.phone}`"
+          class="w-10 h-10 rounded-full bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+          :title="t.discovery.callVenue"
+          @click.stop
+        >
+          <Phone class="w-4 h-4" />
+        </a>
 
-          <button
-            @click="onCardClick"
-            class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs shadow-md shadow-emerald-600/20 hover:shadow-emerald-500/40 transition-all flex items-center gap-1.5 active:scale-95"
-          >
-            <span>{{ t.discovery.viewDetails }}</span>
-            <ChevronLeft v-if="isRtl" class="w-3.5 h-3.5" />
-            <ChevronRight v-else class="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <!-- View Details & Book Button (Pill in vibrant primary blue matching reference) -->
+        <button
+          @click="onCardClick"
+          class="px-4 py-2.5 rounded-full bg-[#38a5e6] hover:bg-[#2b96d6] text-white font-extrabold text-xs shadow-md shadow-[#38a5e6]/30 transition-all flex items-center gap-1.5 hover:scale-102 active:scale-95 cursor-pointer"
+        >
+          <span>{{ t.discovery.viewDetails }}</span>
+          <ChevronLeft v-if="isRtl" class="w-3.5 h-3.5" />
+          <ChevronRight v-else class="w-3.5 h-3.5" />
+        </button>
       </div>
     </div>
   </div>
@@ -142,12 +127,10 @@ import { useGeolocation } from '../../composables/useGeolocation';
 import {
   Navigation,
   Star,
-  MapPin,
   ExternalLink,
   Zap,
   Shield,
   Car,
-  Droplets,
   Phone,
   ChevronLeft,
   ChevronRight

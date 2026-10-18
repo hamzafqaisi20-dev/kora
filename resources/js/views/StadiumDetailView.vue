@@ -1,193 +1,146 @@
 <template>
-  <div class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
-    <!-- Breadcrumb & Back Navigation -->
+  <div class="max-w-4xl mx-auto px-4 py-4 sm:py-6 space-y-6 pb-28 animate-fade-in">
+    <!-- Top Action Bar (Matching Reference Right Screen Style) -->
     <div class="flex items-center justify-between">
       <button
         @click="navigateTo('discovery')"
-        class="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-emerald-400 transition-colors group cursor-pointer"
+        class="w-11 h-11 rounded-full bg-white border border-slate-200/80 shadow-sm hover:shadow text-slate-800 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+        :title="t.details.backToSearch"
       >
-        <ArrowRight v-if="isRtl" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        <ArrowLeft v-else class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        <span>{{ t.details.backToSearch }}</span>
+        <ArrowRight v-if="isRtl" class="w-5 h-5" />
+        <ArrowLeft v-else class="w-5 h-5" />
       </button>
 
-      <div class="flex items-center gap-2">
-        <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-1.5">
-          <ShieldCheck class="w-4 h-4" />
-          <span>{{ t.details.verifiedVenue }}</span>
-        </span>
+      <!-- Verified Venue Pill Badge -->
+      <div class="px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+        <ShieldCheck class="w-4 h-4 text-emerald-600" />
+        <span>{{ t.details.verifiedVenue }}</span>
+      </div>
+
+      <!-- Distance Pill -->
+      <div class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-[#258ecb] text-xs font-extrabold flex items-center gap-1 shadow-xs">
+        <Navigation class="w-3.5 h-3.5 fill-[#38a5e6] text-[#38a5e6]" />
+        <span>{{ distance }} {{ t.discovery.km }}</span>
       </div>
     </div>
 
-    <!-- Header Section: Title, Facebook Integration, Badges -->
-    <div class="bg-slate-900/90 rounded-3xl border border-slate-800 p-6 sm:p-8 relative overflow-hidden shadow-2xl">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-        <div class="space-y-3 max-w-2xl">
-          <!-- Distance and sport badges -->
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 rounded-xl bg-emerald-500 text-slate-950 text-xs font-extrabold uppercase">
-              {{ stadium.format }}
-            </span>
-            <span class="px-3 py-1 rounded-xl bg-slate-800 text-emerald-400 text-xs font-bold flex items-center gap-1 border border-slate-700">
-              <Navigation class="w-3.5 h-3.5" />
-              <span>{{ distance }} {{ t.discovery.km }} {{ isRtl ? 'من موقعك' : 'from you' }}</span>
-            </span>
-            <span class="px-3 py-1 rounded-xl bg-amber-500/20 text-amber-300 text-xs font-bold flex items-center gap-1 border border-amber-500/30">
-              <Star class="w-3.5 h-3.5 fill-current text-amber-400" />
-              <span>{{ stadium.rating }} ({{ stadium.reviewsCount }} {{ isRtl ? 'تقييم' : 'reviews' }})</span>
-            </span>
-          </div>
+    <!-- Main Large Stadium Photo Frame with Rounded Squircle (Ref: Center Screen) -->
+    <div class="relative w-full h-80 sm:h-96 rounded-[38px] overflow-hidden bg-slate-100 shadow-[0_12px_36px_rgba(25,50,90,0.08)] cursor-pointer select-none group" @click="openGallery(0)">
+      <img
+        :src="stadium.images[0]"
+        :alt="isRtl ? stadium.nameAr : stadium.nameEn"
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20"></div>
 
-          <!-- Stadium Name with Direct External Facebook Link -->
-          <div class="flex items-center gap-3">
-            <a
-              :href="stadium.facebookUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-3xl sm:text-4xl font-black text-white hover:text-emerald-400 transition-colors inline-flex items-center gap-2.5 group"
-              :title="t.discovery.openFacebook"
-            >
-              <span>{{ isRtl ? stadium.nameAr : stadium.nameEn }}</span>
-              <ExternalLink class="w-6 h-6 text-emerald-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
-            </a>
-          </div>
+      <!-- Story Progress Bars at Top -->
+      <div class="absolute top-4 inset-x-6 flex items-center gap-1.5 z-20">
+        <div class="h-1 flex-1 bg-white rounded-full"></div>
+        <div class="h-1 flex-1 bg-white/50 rounded-full"></div>
+        <div class="h-1 flex-1 bg-white/50 rounded-full"></div>
+        <div class="h-1 flex-1 bg-white/50 rounded-full"></div>
+      </div>
 
-          <!-- Location & Facebook Page Link -->
-          <div class="flex flex-wrap items-center gap-4 text-xs text-slate-300">
-            <div class="flex items-center gap-1.5 text-slate-400">
-              <MapPin class="w-4 h-4 text-emerald-400" />
-              <span>{{ stadium.addressAr && isRtl ? stadium.addressAr : stadium.addressEn }}</span>
-            </div>
+      <!-- Expand Gallery Button -->
+      <button
+        @click.stop="openGallery(0)"
+        class="absolute top-8 end-4 z-20 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5 hover:bg-black/60 transition-colors"
+      >
+        <Maximize2 class="w-3.5 h-3.5" />
+        <span>{{ stadium.images.length }} {{ isRtl ? 'صور' : 'Photos' }}</span>
+      </button>
 
-            <!-- Direct Facebook link button -->
-            <a
-              :href="stadium.facebookUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 text-xs font-bold transition-all"
-            >
-              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <span>{{ t.details.facebookPageBadge }}</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- Contact & Rate Box -->
-        <div class="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-4 p-5 rounded-2xl bg-slate-950/80 border border-slate-800 shrink-0">
+      <!-- Title Bubble Inside Image at Bottom -->
+      <div class="absolute bottom-4 inset-x-4 z-20">
+        <div class="bg-white/95 backdrop-blur-md rounded-[28px] p-4 px-5 shadow-lg border border-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span class="text-xs text-slate-400 block">{{ isRtl ? 'سعر حجز الساعة:' : 'Hourly Booking Rate:' }}</span>
-            <div class="flex items-baseline gap-1.5">
-              <span class="text-3xl font-black text-emerald-400">{{ stadium.pricePerHour }}</span>
-              <span class="text-sm font-semibold text-slate-400">{{ t.discovery.hourRate }}</span>
-            </div>
-          </div>
-
-          <!-- Contact Inquiries -->
-          <div class="space-y-1.5 text-xs w-full sm:w-auto">
-            <span class="text-slate-400 block text-[11px] font-semibold">{{ t.details.contactVenue }}</span>
+            <!-- Stadium Name with Direct External Facebook Link Integration -->
             <div class="flex items-center gap-2">
               <a
-                :href="`tel:${stadium.phone}`"
-                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
+                :href="stadium.facebookUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-xl sm:text-2xl font-black text-slate-900 hover:text-[#38a5e6] transition-colors inline-flex items-center gap-2"
+                :title="t.discovery.openFacebook"
+                @click.stop
               >
-                <Phone class="w-3.5 h-3.5" />
-                <span>{{ stadium.phone }}</span>
+                <span>{{ isRtl ? stadium.nameAr : stadium.nameEn }}</span>
+                <ExternalLink class="w-4 h-4 text-[#38a5e6]" />
               </a>
-              <button
-                @click="copyPhone"
-                class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                :title="t.details.copyPhone"
-              >
-                <Copy class="w-4 h-4" />
-              </button>
             </div>
-            <p v-if="copiedToast" class="text-[10px] text-emerald-400 font-bold animate-pulse">
-              ✓ {{ t.details.copiedPhone }}
-            </p>
+
+            <div class="flex items-center gap-2 text-xs text-slate-500 mt-1">
+              <span class="font-bold text-slate-700">{{ stadium.format }}</span>
+              <span>•</span>
+              <span>{{ isRtl ? stadium.addressAr : stadium.addressEn }}</span>
+            </div>
+          </div>
+
+          <!-- Price & Rating Bubble -->
+          <div class="flex items-center gap-4 shrink-0 sm:border-s sm:ps-4 border-slate-200">
+            <div>
+              <span class="text-xs text-slate-400 block">{{ isRtl ? 'السعر/ساعة' : 'Rate/hr' }}</span>
+              <span class="text-xl font-black text-[#258ecb]">{{ stadium.pricePerHour }} {{ isRtl ? 'ريال' : 'SAR' }}</span>
+            </div>
+            <div class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200">
+              <Star class="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+              <span>{{ stadium.rating }}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Photo Gallery Showcase -->
-    <div class="space-y-3">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <Camera class="w-5 h-5 text-emerald-400" />
-          <span>{{ t.details.photoGallery }}</span>
-        </h3>
+    <!-- Quick Actions Row: Facebook Official Link + Direct Call Phone -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <!-- Direct Facebook Link Card -->
+      <a
+        :href="stadium.facebookUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="bg-white rounded-[24px] p-4 border border-blue-100 hover:border-blue-300 shadow-sm flex items-center justify-between transition-all group"
+      >
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-slate-900 block group-hover:text-blue-600 transition-colors">
+              {{ t.details.facebookPageBadge }}
+            </span>
+            <span class="text-[11px] text-slate-400">{{ isRtl ? 'عرض الصور والتحديثات الرسمية' : 'Visit Official Page' }}</span>
+          </div>
+        </div>
+        <ExternalLink class="w-4 h-4 text-blue-500 group-hover:translate-x-0.5 transition-transform" />
+      </a>
+
+      <!-- Direct Call Card with Quick Copy -->
+      <div class="bg-white rounded-[24px] p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <a
+            :href="`tel:${stadium.phone}`"
+            class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 hover:scale-105 transition-transform"
+          >
+            <Phone class="w-5 h-5" />
+          </a>
+          <div>
+            <span class="text-xs font-bold text-slate-900 block font-mono">{{ stadium.phone }}</span>
+            <span class="text-[11px] text-slate-400">{{ t.details.contactVenue }}</span>
+          </div>
+        </div>
         <button
-          @click="openGallery(0)"
-          class="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1"
+          @click="copyPhone"
+          class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
         >
-          <span>{{ isRtl ? 'عرض كل الصور بدقة كاملة' : 'View Fullscreen Gallery' }}</span>
-          <Maximize2 class="w-3.5 h-3.5" />
+          <Copy class="w-3.5 h-3.5" />
+          <span>{{ copiedToast ? (isRtl ? 'تم النسخ!' : 'Copied!') : t.details.copyPhone }}</span>
         </button>
       </div>
-
-      <!-- High Resolution Grid Gallery -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 h-[420px] rounded-3xl overflow-hidden">
-        <!-- Main Large Photo (2 columns) -->
-        <div
-          class="md:col-span-2 relative group overflow-hidden cursor-pointer h-full bg-slate-900"
-          @click="openGallery(0)"
-        >
-          <img
-            :src="stadium.images[0]"
-            :alt="stadium.nameEn"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-4">
-            <span class="text-xs font-bold text-white bg-slate-950/70 backdrop-blur-md px-3 py-1 rounded-xl">
-              {{ isRtl ? 'صورة الميدان الرئيسية' : 'Main Pitch Aerial View' }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Column 2 (2 stacked photos) -->
-        <div class="hidden md:flex flex-col gap-3 h-full">
-          <div
-            v-if="stadium.images[1]"
-            class="relative group overflow-hidden cursor-pointer flex-1 bg-slate-900 rounded-xl"
-            @click="openGallery(1)"
-          >
-            <img :src="stadium.images[1]" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          </div>
-          <div
-            v-if="stadium.images[2]"
-            class="relative group overflow-hidden cursor-pointer flex-1 bg-slate-900 rounded-xl"
-            @click="openGallery(2)"
-          >
-            <img :src="stadium.images[2]" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          </div>
-        </div>
-
-        <!-- Column 3 (2 stacked photos or overlay) -->
-        <div class="hidden md:flex flex-col gap-3 h-full">
-          <div
-            v-if="stadium.images[3]"
-            class="relative group overflow-hidden cursor-pointer flex-1 bg-slate-900 rounded-xl"
-            @click="openGallery(3)"
-          >
-            <img :src="stadium.images[3]" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          </div>
-          <div
-            v-if="stadium.images[4]"
-            class="relative group overflow-hidden cursor-pointer flex-1 bg-slate-900 rounded-xl"
-            @click="openGallery(4)"
-          >
-            <img :src="stadium.images[4]" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-            <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center text-white text-xs font-bold">
-              + {{ stadium.images.length - 3 }} {{ isRtl ? 'صور إضافية' : 'more' }}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Interactive Time-Slot Selector Section -->
+    <!-- Interactive Time-Slot Selector Component (Styling adapted to soft blue/white) -->
     <div id="booking-section">
       <TimeSlotSelector
         :stadium="stadium"
@@ -196,77 +149,71 @@
       />
     </div>
 
-    <!-- Pitch Specifications & Amenities Dual Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Pitch Specifications & Amenities Cards (Crisp White with Giant Rounded Corners) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Specifications -->
-      <div class="bg-slate-900/90 rounded-2xl border border-slate-800 p-6 space-y-4">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <Layers class="w-5 h-5 text-emerald-400" />
+      <div class="bg-white rounded-[32px] p-6 border border-slate-200/80 shadow-[0_8px_30px_rgba(25,50,90,0.05)] space-y-4">
+        <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+          <Layers class="w-5 h-5 text-[#38a5e6]" />
           <span>{{ t.details.fieldSpecs }}</span>
         </h3>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80">
-            <span class="text-slate-400 block mb-1">{{ t.details.dimensions }}</span>
-            <span class="text-sm font-extrabold text-white">{{ stadium.dimensions }}</span>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+            <span class="text-slate-400 block mb-0.5">{{ t.details.dimensions }}</span>
+            <span class="font-extrabold text-slate-800">{{ stadium.dimensions }}</span>
           </div>
-
-          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80">
-            <span class="text-slate-400 block mb-1">{{ t.details.capacity }}</span>
-            <span class="text-sm font-extrabold text-white">{{ stadium.capacity }}</span>
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+            <span class="text-slate-400 block mb-0.5">{{ t.details.capacity }}</span>
+            <span class="font-extrabold text-slate-800">{{ stadium.capacity }}</span>
           </div>
-
-          <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-950 border border-slate-800/80">
-            <span class="text-slate-400 block mb-1">{{ t.details.surfaceType }}</span>
-            <span class="text-sm font-bold text-emerald-400">{{ isRtl ? stadium.surfaceAr : stadium.surfaceEn }}</span>
+          <div class="col-span-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+            <span class="text-slate-400 block mb-0.5">{{ t.details.surfaceType }}</span>
+            <span class="font-bold text-emerald-700">{{ isRtl ? stadium.surfaceAr : stadium.surfaceEn }}</span>
           </div>
-
-          <div class="sm:col-span-2 p-3.5 rounded-xl bg-slate-950 border border-slate-800/80">
-            <span class="text-slate-400 block mb-1">{{ t.details.lightingLevel }}</span>
-            <span class="text-xs font-semibold text-slate-200">{{ stadium.lighting }}</span>
+          <div class="col-span-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+            <span class="text-slate-400 block mb-0.5">{{ t.details.lightingLevel }}</span>
+            <span class="font-semibold text-slate-700">{{ stadium.lighting }}</span>
           </div>
         </div>
 
-        <p class="text-xs text-slate-400 leading-relaxed pt-2 border-t border-slate-800/80">
+        <p class="text-xs text-slate-500 leading-relaxed pt-2 border-t border-slate-100">
           {{ isRtl ? stadium.descriptionAr : stadium.descriptionEn }}
         </p>
       </div>
 
-      <!-- Amenities & Facilities List -->
-      <div class="bg-slate-900/90 rounded-2xl border border-slate-800 p-6 space-y-4">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <CheckSquare class="w-5 h-5 text-emerald-400" />
+      <!-- Amenities & Map Directions -->
+      <div class="bg-white rounded-[32px] p-6 border border-slate-200/80 shadow-[0_8px_30px_rgba(25,50,90,0.05)] space-y-4">
+        <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+          <CheckSquare class="w-5 h-5 text-[#38a5e6]" />
           <span>{{ t.details.amenitiesTitle }}</span>
         </h3>
 
-        <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="grid grid-cols-2 gap-2.5 text-xs">
           <div
             v-for="(val, key) in stadium.amenities"
             :key="key"
             :class="[
-              'p-3 rounded-xl border flex items-center gap-2.5',
-              val ? 'bg-slate-950 border-slate-800 text-slate-200' : 'bg-slate-950/40 border-slate-800/40 text-slate-600 line-through'
+              'p-2.5 px-3 rounded-2xl border flex items-center gap-2 font-medium',
+              val ? 'bg-sky-50/60 border-sky-100 text-slate-800' : 'bg-slate-50 border-slate-100 text-slate-400 line-through'
             ]"
           >
-            <CheckCircle2 v-if="val" class="w-4 h-4 text-emerald-400 shrink-0" />
-            <XCircle v-else class="w-4 h-4 text-slate-600 shrink-0" />
-            <span>{{ getAmenityLabel(key) }}</span>
+            <CheckCircle2 v-if="val" class="w-4 h-4 text-[#38a5e6] shrink-0" />
+            <XCircle v-else class="w-4 h-4 text-slate-300 shrink-0" />
+            <span class="truncate">{{ getAmenityLabel(key) }}</span>
           </div>
         </div>
 
-        <!-- Map & Location Button -->
-        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <MapPin class="w-5 h-5 text-emerald-400" />
-            <div class="text-xs">
-              <span class="font-bold text-white block">{{ isRtl ? 'الموقع الجغرافي والاتجاهات' : 'GPS Directions' }}</span>
-              <span class="text-slate-400">{{ stadium.addressAr || stadium.addressEn }}</span>
-            </div>
+        <!-- Google Maps Link Card -->
+        <div class="p-3.5 rounded-2xl bg-[#ebf2f7] border border-slate-200 flex items-center justify-between mt-2">
+          <div class="flex items-center gap-2 text-xs">
+            <MapPin class="w-4 h-4 text-[#38a5e6]" />
+            <span class="font-bold text-slate-800">{{ isRtl ? 'موقع الملعب على الخريطة' : 'Venue GPS Location' }}</span>
           </div>
           <a
             :href="stadium.mapsUrl"
             target="_blank"
-            class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all shrink-0"
+            class="px-3 py-1.5 rounded-full bg-white text-slate-700 hover:text-[#38a5e6] text-xs font-bold shadow-xs transition-colors"
           >
             {{ t.details.openGoogleMaps }}
           </a>
@@ -310,7 +257,6 @@ import {
   MapPin,
   Phone,
   Copy,
-  Camera,
   Maximize2,
   Layers,
   CheckSquare,

@@ -1,159 +1,146 @@
 <template>
-  <div class="space-y-12">
-    <!-- HERO SECTION -->
-    <section class="relative min-h-[580px] lg:min-h-[640px] flex items-center justify-center overflow-hidden py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800/60">
-      <!-- High-resolution Cinematic Sports Turf Background Image with dark gradient overlay -->
-      <div class="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=2000&q=85"
-          alt="Sports Turf Arena"
-          class="w-full h-full object-cover object-center filter brightness-[0.25] scale-105 transform motion-safe:animate-pulse-subtle"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/40"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
-      </div>
-
-      <div class="relative z-10 max-w-5xl mx-auto text-center space-y-8">
-        <!-- Trust badge -->
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-emerald-500/40 text-emerald-400 text-xs font-bold shadow-2xl backdrop-blur-md animate-fade-in">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span>{{ t.hero.badge }}</span>
+  <div class="space-y-10 pb-24">
+    <!-- HERO / WELCOME SECTION (Directly inspired by reference left screen) -->
+    <section class="max-w-4xl mx-auto px-4 pt-4 sm:pt-6">
+      <div class="bg-white rounded-[40px] p-6 sm:p-10 border border-slate-200/80 shadow-[0_12px_36px_rgba(25,50,90,0.06)] text-center relative overflow-hidden">
+        <!-- Brand Wordmark at Top -->
+        <div class="inline-block mb-4">
+          <span class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight lowercase font-['Plus_Jakarta_Sans',sans-serif]">
+            korapass
+          </span>
         </div>
 
-        <!-- Hero Headline -->
-        <div class="space-y-3">
-          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight">
-            <span>{{ t.hero.titleLine1 }}</span><br/>
-            <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">
-              {{ t.hero.titleLine2 }}
+        <!-- Athletic Feature Artwork Container with Large Rounded Frame -->
+        <div class="relative w-full max-w-sm mx-auto h-48 sm:h-56 rounded-[32px] overflow-hidden bg-gradient-to-b from-sky-50 to-[#ebf2f7] p-2 flex items-center justify-center my-4 border border-sky-100">
+          <img
+            src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80"
+            alt="Stadium Turf"
+            class="w-full h-full object-cover rounded-[26px] shadow-sm filter saturate-110"
+          />
+          <div class="absolute bottom-4 inset-x-6 z-10 flex items-center justify-center">
+            <span class="px-4 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-[#228ecb] text-xs font-black shadow-md border border-white">
+              {{ t.hero.badge }}
             </span>
+          </div>
+        </div>
+
+        <!-- Typography Headline (Clean, modern dark text like reference) -->
+        <div class="space-y-2 max-w-lg mx-auto mt-4">
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
+            {{ isRtl ? 'مرحباً بك في كورا باس' : 'Welcome to KoraPass' }}
           </h1>
-          <p class="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
-            {{ t.hero.subtitle }}
+          <p class="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+            {{ isRtl
+              ? 'المنصة الأولى لحجز الملاعب والمنشآت الرياضية القريبة منك فورياً وبأعلى معايير الجودة'
+              : 'Sports venue compatibility & booking platform that helps you reserve fields in seconds.'
+            }}
           </p>
         </div>
 
-        <!-- Quick "Find Nearest Stadium" Button with Geolocation Trigger -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <!-- Primary Action Button (Solid Vibrant Blue Pill matching reference) -->
+        <div class="max-w-xs mx-auto mt-6 space-y-3">
           <button
             type="button"
             @click="triggerNearestDetection"
-            class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 hover:from-emerald-500 hover:to-teal-300 text-slate-950 font-black text-sm sm:text-base shadow-xl shadow-emerald-600/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer group"
+            class="w-full py-4 rounded-full bg-[#38a5e6] hover:bg-[#2897da] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-[#38a5e6]/30 hover:shadow-[#38a5e6]/50 hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Navigation class="w-5 h-5 text-slate-950 group-hover:rotate-45 transition-transform" />
+            <Navigation class="w-5 h-5 text-white" />
             <span>{{ isDetecting ? t.hero.detectingLocation : t.hero.findNearestBtn }}</span>
-            <span class="px-2 py-0.5 rounded-full bg-slate-950/20 text-slate-900 text-xs font-mono">GPS</span>
           </button>
 
           <button
             type="button"
-            @click="openMapModal = true"
-            class="w-full sm:w-auto px-6 py-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2.5 backdrop-blur-md cursor-pointer hover:border-emerald-500/50"
+            @click="scrollToDiscovery"
+            class="text-xs font-bold text-slate-400 hover:text-slate-700 transition-colors block mx-auto py-1"
           >
-            <Map class="w-5 h-5 text-emerald-400" />
-            <span>{{ t.discovery.viewOnMap }}</span>
+            {{ isRtl ? 'تخطي واستعراض جميع الملاعب' : 'Skip & Explore All Venues' }}
           </button>
         </div>
 
-        <!-- Quick Search Bar Widget -->
-        <div class="bg-slate-900/95 backdrop-blur-2xl border border-slate-800/90 rounded-3xl p-3 sm:p-4 shadow-2xl max-w-4xl mx-auto">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-start">
-            <!-- Search Text -->
-            <div class="p-2.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 focus-within:border-emerald-500 transition-colors">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                {{ isRtl ? 'اسم الملعب أو الحي' : 'Venue / Neighborhood' }}
-              </label>
-              <div class="flex items-center gap-2">
-                <Search class="w-4 h-4 text-emerald-400 shrink-0" />
-                <input
-                  type="text"
-                  v-model="filters.keyword"
-                  :placeholder="t.hero.searchPlaceholder"
-                  class="bg-transparent border-0 text-xs text-white placeholder-slate-500 focus:outline-none w-full"
-                />
-              </div>
+        <!-- Floating Quick Search & Filter Bar -->
+        <div class="mt-8 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3 text-start">
+          <!-- Keyword Search Input -->
+          <div class="bg-slate-50 hover:bg-white focus-within:bg-white rounded-2xl p-2.5 px-3.5 border border-slate-200/80 focus-within:border-[#38a5e6] transition-all">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+              {{ isRtl ? 'البحث' : 'Search' }}
+            </label>
+            <div class="flex items-center gap-2">
+              <Search class="w-4 h-4 text-[#38a5e6] shrink-0" />
+              <input
+                type="text"
+                v-model="filters.keyword"
+                :placeholder="t.hero.searchPlaceholder"
+                class="bg-transparent border-0 text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-full"
+              />
             </div>
+          </div>
 
-            <!-- City Selector -->
-            <div class="p-2.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 focus-within:border-emerald-500 transition-colors">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                {{ isRtl ? 'المدينة والمنطقة' : 'City & Region' }}
-              </label>
-              <div class="flex items-center gap-2">
-                <MapPin class="w-4 h-4 text-emerald-400 shrink-0" />
-                <select
-                  v-model="filters.city"
-                  class="bg-transparent border-0 text-xs text-white focus:outline-none w-full cursor-pointer"
-                >
-                  <option value="all" class="bg-slate-900 text-white">{{ t.hero.selectCity }}</option>
-                  <option value="الرياض" class="bg-slate-900 text-white">الرياض (Riyadh)</option>
-                  <option value="جدة" class="bg-slate-900 text-white">جدة (Jeddah)</option>
-                  <option value="الخبر" class="bg-slate-900 text-white">الخبر (Al Khobar)</option>
-                </select>
-              </div>
+          <!-- City Selector -->
+          <div class="bg-slate-50 hover:bg-white focus-within:bg-white rounded-2xl p-2.5 px-3.5 border border-slate-200/80 focus-within:border-[#38a5e6] transition-all">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+              {{ isRtl ? 'المدينة' : 'City' }}
+            </label>
+            <div class="flex items-center gap-2">
+              <MapPin class="w-4 h-4 text-[#38a5e6] shrink-0" />
+              <select
+                v-model="filters.city"
+                class="bg-transparent border-0 text-xs text-slate-800 focus:outline-none w-full cursor-pointer font-medium"
+              >
+                <option value="all">{{ t.hero.selectCity }}</option>
+                <option value="الرياض">الرياض (Riyadh)</option>
+                <option value="جدة">جدة (Jeddah)</option>
+                <option value="الخبر">الخبر (Al Khobar)</option>
+              </select>
             </div>
+          </div>
 
-            <!-- Sport Type Selector -->
-            <div class="p-2.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 focus-within:border-emerald-500 transition-colors">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                {{ t.hero.selectSport }}
-              </label>
-              <div class="flex items-center gap-2">
-                <Trophy class="w-4 h-4 text-emerald-400 shrink-0" />
-                <select
-                  v-model="filters.sport"
-                  class="bg-transparent border-0 text-xs text-white focus:outline-none w-full cursor-pointer"
-                >
-                  <option value="all" class="bg-slate-900 text-white">{{ t.hero.allSports }}</option>
-                  <option value="football" class="bg-slate-900 text-white">{{ t.hero.football }}</option>
-                  <option value="padel" class="bg-slate-900 text-white">{{ t.hero.padel }}</option>
-                  <option value="tennis" class="bg-slate-900 text-white">{{ t.hero.tennis }}</option>
-                  <option value="basketball" class="bg-slate-900 text-white">{{ t.hero.basketball }}</option>
-                </select>
-              </div>
+          <!-- Sport Selector -->
+          <div class="bg-slate-50 hover:bg-white focus-within:bg-white rounded-2xl p-2.5 px-3.5 border border-slate-200/80 focus-within:border-[#38a5e6] transition-all">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+              {{ isRtl ? 'الرياضة' : 'Sport' }}
+            </label>
+            <div class="flex items-center gap-2">
+              <Trophy class="w-4 h-4 text-[#38a5e6] shrink-0" />
+              <select
+                v-model="filters.sport"
+                class="bg-transparent border-0 text-xs text-slate-800 focus:outline-none w-full cursor-pointer font-medium"
+              >
+                <option value="all">{{ t.hero.allSports }}</option>
+                <option value="football">{{ t.hero.football }}</option>
+                <option value="padel">{{ t.hero.padel }}</option>
+                <option value="tennis">{{ t.hero.tennis }}</option>
+                <option value="basketball">{{ t.hero.basketball }}</option>
+              </select>
             </div>
-
-            <!-- Action Button -->
-            <button
-              type="button"
-              @click="scrollToDiscovery"
-              class="rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 p-3 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
-            >
-              <Search class="w-4 h-4" />
-              <span>{{ t.hero.searchButton }}</span>
-            </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MAIN DISCOVERY & VENUES SECTION -->
-    <section id="venues-discovery" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-      <!-- Section Header & Dual Discovery Mode Toggle -->
-      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-slate-800">
+    <!-- VENUES DISCOVERY GRID SECTION (Directly matching reference center layout) -->
+    <section id="venues-discovery" class="max-w-5xl mx-auto px-4 space-y-6">
+      <!-- Section Bar with Dual Modes & Sort -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-1">
-            {{ isRtl ? 'استكشاف وحجز الملاعب' : 'Stadium Explorer' }}
-          </span>
-          <h2 class="text-3xl font-black text-white">
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             {{ t.discovery.title }}
           </h2>
-          <p class="text-xs text-slate-400 mt-1">
-            {{ t.discovery.subtitle }}
+          <p class="text-xs text-slate-500 font-medium mt-0.5">
+            {{ isRtl ? `تم العثور على ${sortedStadiums.length} ملاعب متاحة للحجز` : `${sortedStadiums.length} fields available for reservation` }}
           </p>
         </div>
 
-        <!-- Dual Discovery Modes Controls -->
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- Dual Modes Switch: Nearest to Me vs All/Manual -->
-          <div class="bg-slate-900 p-1 rounded-2xl border border-slate-800 flex items-center">
+        <!-- Mode Pills & Sort Dropdown -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Dual Discovery Modes -->
+          <div class="bg-white p-1 rounded-full border border-slate-200 shadow-sm flex items-center">
             <button
               @click="setDiscoveryMode('nearest')"
               :class="[
-                'px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer',
+                'px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer',
                 discoveryMode === 'nearest'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#38a5e6] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               ]"
             >
               <Navigation class="w-3.5 h-3.5" />
@@ -163,10 +150,10 @@
             <button
               @click="setDiscoveryMode('all')"
               :class="[
-                'px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer',
+                'px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer',
                 discoveryMode === 'all'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#38a5e6] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               ]"
             >
               <Grid class="w-3.5 h-3.5" />
@@ -174,110 +161,83 @@
             </button>
           </div>
 
-          <!-- Open Tactical Radar Map -->
+          <!-- Radar Map Trigger -->
           <button
             @click="openMapModal = true"
-            class="px-4 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-bold text-slate-200 hover:text-white flex items-center gap-2 transition-all cursor-pointer"
+            class="px-3.5 py-2 rounded-full bg-white border border-slate-200 shadow-sm text-xs font-bold text-slate-700 hover:text-[#38a5e6] hover:border-[#38a5e6] transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Map class="w-4 h-4 text-emerald-400" />
+            <Map class="w-3.5 h-3.5 text-[#38a5e6]" />
             <span>{{ t.discovery.viewOnMap }}</span>
           </button>
         </div>
       </div>
 
-      <!-- Filters Bar & Results Counter -->
-      <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-2 text-xs text-slate-300">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>
-              {{ isRtl ? `تم العثور على ${sortedStadiums.length} ملعب متاح` : `${sortedStadiums.length} venues available` }}
-            </span>
-          </div>
+      <!-- Quick Filter Pills Strip -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          @click="filters.amenities.nightLighting = !filters.amenities.nightLighting"
+          :class="[
+            'px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer',
+            filters.amenities.nightLighting
+              ? 'bg-[#38a5e6] text-white border-[#38a5e6] shadow-sm'
+              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+          ]"
+        >
+          <Zap class="w-3.5 h-3.5" :class="filters.amenities.nightLighting ? 'text-white' : 'text-amber-500'" />
+          <span>{{ isRtl ? 'إضاءة ليلية' : 'Lighting' }}</span>
+        </button>
 
-          <!-- Sort Select -->
-          <div class="flex items-center gap-2 text-xs">
-            <span class="text-slate-400">{{ t.discovery.sortBy }}</span>
-            <select
-              v-model="sortBy"
-              class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer"
-            >
-              <option value="nearest">{{ t.discovery.sortNearest }}</option>
-              <option value="rating">{{ t.discovery.sortRating }}</option>
-              <option value="priceLow">{{ t.discovery.sortPriceLow }}</option>
-              <option value="priceHigh">{{ t.discovery.sortPriceHigh }}</option>
-            </select>
-          </div>
-        </div>
+        <button
+          type="button"
+          @click="filters.amenities.indoor = !filters.amenities.indoor"
+          :class="[
+            'px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer',
+            filters.amenities.indoor
+              ? 'bg-[#38a5e6] text-white border-[#38a5e6] shadow-sm'
+              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+          ]"
+        >
+          <Shield class="w-3.5 h-3.5" :class="filters.amenities.indoor ? 'text-white' : 'text-[#38a5e6]'" />
+          <span>{{ isRtl ? 'مغطى ومكيف' : 'Indoor AC' }}</span>
+        </button>
 
-        <!-- Amenity Pills Filters -->
-        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80 text-xs">
-          <span class="text-slate-400 text-[11px] font-semibold">{{ isRtl ? 'المرافق المطلوبة:' : 'Filter Amenities:' }}</span>
-          
-          <button
-            type="button"
-            @click="filters.amenities.nightLighting = !filters.amenities.nightLighting"
-            :class="[
-              'px-3 py-1 rounded-xl border text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer',
-              filters.amenities.nightLighting
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-            ]"
-          >
-            <Zap class="w-3 h-3 text-amber-400" />
-            <span>{{ isRtl ? 'إضاءة ليلية' : 'Lighting' }}</span>
-          </button>
+        <button
+          type="button"
+          @click="filters.amenities.parking = !filters.amenities.parking"
+          :class="[
+            'px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer',
+            filters.amenities.parking
+              ? 'bg-[#38a5e6] text-white border-[#38a5e6] shadow-sm'
+              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+          ]"
+        >
+          <Car class="w-3.5 h-3.5" :class="filters.amenities.parking ? 'text-white' : 'text-slate-500'" />
+          <span>{{ isRtl ? 'مواقف مجانية' : 'Free Parking' }}</span>
+        </button>
 
-          <button
-            type="button"
-            @click="filters.amenities.indoor = !filters.amenities.indoor"
-            :class="[
-              'px-3 py-1 rounded-xl border text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer',
-              filters.amenities.indoor
-                ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-            ]"
-          >
-            <Shield class="w-3 h-3 text-sky-400" />
-            <span>{{ isRtl ? 'مغطى ومكيف' : 'Indoor AC' }}</span>
-          </button>
+        <button
+          type="button"
+          @click="filters.amenities.showerRooms = !filters.amenities.showerRooms"
+          :class="[
+            'px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer',
+            filters.amenities.showerRooms
+              ? 'bg-[#38a5e6] text-white border-[#38a5e6] shadow-sm'
+              : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+          ]"
+        >
+          <Droplets class="w-3.5 h-3.5" :class="filters.amenities.showerRooms ? 'text-white' : 'text-cyan-500'" />
+          <span>{{ isRtl ? 'غرف استحمام' : 'Shower Rooms' }}</span>
+        </button>
 
-          <button
-            type="button"
-            @click="filters.amenities.parking = !filters.amenities.parking"
-            :class="[
-              'px-3 py-1 rounded-xl border text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer',
-              filters.amenities.parking
-                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-            ]"
-          >
-            <Car class="w-3 h-3 text-emerald-400" />
-            <span>{{ isRtl ? 'مواقف خاصة' : 'Parking' }}</span>
-          </button>
-
-          <button
-            type="button"
-            @click="filters.amenities.showerRooms = !filters.amenities.showerRooms"
-            :class="[
-              'px-3 py-1 rounded-xl border text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer',
-              filters.amenities.showerRooms
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-            ]"
-          >
-            <Droplets class="w-3 h-3 text-cyan-400" />
-            <span>{{ isRtl ? 'غرف استحمام' : 'Showers' }}</span>
-          </button>
-
-          <button
-            type="button"
-            @click="resetFilters"
-            class="text-[11px] text-slate-500 hover:text-slate-300 underline ms-auto"
-          >
-            {{ t.discovery.filters.clearAll }}
-          </button>
-        </div>
+        <button
+          v-if="hasActiveFilters"
+          type="button"
+          @click="resetFilters"
+          class="text-xs text-slate-400 hover:text-slate-700 underline font-semibold ms-auto"
+        >
+          {{ t.discovery.filters.clearAll }}
+        </button>
       </div>
 
       <!-- Stadium Cards Grid -->
@@ -292,24 +252,24 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-16 bg-slate-900/60 rounded-3xl border border-slate-800 p-8 space-y-4">
-        <div class="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto text-slate-500">
-          <Search class="w-8 h-8" />
+      <div v-else class="text-center py-16 bg-white rounded-[36px] border border-slate-200 p-8 space-y-4 shadow-sm">
+        <div class="w-16 h-16 rounded-full bg-sky-50 text-[#38a5e6] flex items-center justify-center mx-auto">
+          <Search class="w-7 h-7" />
         </div>
-        <h4 class="text-lg font-bold text-white">{{ isRtl ? 'لم يتم العثور على ملاعب مطابقة' : 'No Stadiums Match Criteria' }}</h4>
-        <p class="text-xs text-slate-400 max-w-sm mx-auto">
-          {{ isRtl ? 'جرب تغيير معايير البحث أو اختيار مدينة أخرى لعرض الملاعب المتاحة.' : 'Try relaxing your filters or selecting a different sport or city.' }}
+        <h4 class="text-lg font-bold text-slate-900">{{ isRtl ? 'لم يتم العثور على ملاعب مطابقة' : 'No Venues Found' }}</h4>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto">
+          {{ isRtl ? 'يرجى تجربة تقليل خيارات التصفية أو تغيير المدينة لعرض الملاعب الشاغرة.' : 'Try adjusting your filters or selecting a different city.' }}
         </p>
         <button
           @click="resetFilters"
-          class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs"
+          class="px-5 py-2.5 rounded-full bg-[#38a5e6] text-white font-bold text-xs shadow-md"
         >
           {{ t.discovery.filters.clearAll }}
         </button>
       </div>
     </section>
 
-    <!-- Map Preview Modal -->
+    <!-- Tactical Radar Map Modal -->
     <MapPreviewModal
       :isOpen="openMapModal"
       :stadiums="stadiums"
@@ -345,7 +305,7 @@ const { stadiums, selectStadium } = useBookings();
 
 const openMapModal = ref(false);
 const discoveryMode = ref('nearest'); // 'nearest' | 'all'
-const sortBy = ref('nearest'); // 'nearest' | 'rating' | 'priceLow' | 'priceHigh'
+const sortBy = ref('nearest');
 
 const filters = ref({
   keyword: '',
@@ -357,6 +317,18 @@ const filters = ref({
     parking: false,
     showerRooms: false,
   },
+});
+
+const hasActiveFilters = computed(() => {
+  return (
+    filters.value.keyword ||
+    filters.value.city !== 'all' ||
+    filters.value.sport !== 'all' ||
+    filters.value.amenities.nightLighting ||
+    filters.value.amenities.indoor ||
+    filters.value.amenities.parking ||
+    filters.value.amenities.showerRooms
+  );
 });
 
 const triggerNearestDetection = () => {
@@ -432,7 +404,6 @@ const sortedStadiums = computed(() => {
     return true;
   });
 
-  // Calculate distance for each
   const listWithDist = list.map((s) => {
     const dist = calculateDistance(
       userCoords.value.lat,
@@ -443,17 +414,9 @@ const sortedStadiums = computed(() => {
     return { ...s, calculatedDistance: dist };
   });
 
-  // Sort
   if (sortBy.value === 'nearest') {
     return listWithDist.sort((a, b) => a.calculatedDistance - b.calculatedDistance);
-  } else if (sortBy.value === 'rating') {
-    return listWithDist.sort((a, b) => b.rating - a.rating);
-  } else if (sortBy.value === 'priceLow') {
-    return listWithDist.sort((a, b) => a.pricePerHour - b.pricePerHour);
-  } else if (sortBy.value === 'priceHigh') {
-    return listWithDist.sort((a, b) => b.pricePerHour - a.pricePerHour);
   }
-
   return listWithDist;
 });
 

@@ -6,26 +6,63 @@
   >
     <div class="relative w-full max-w-3xl bg-white border border-slate-200/80 rounded-[38px] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="p-5 px-6 border-b border-slate-100 bg-[#f4f8fb] flex items-center justify-between">
+      <div class="p-4 sm:p-5 px-6 border-b border-slate-100 bg-[#f4f8fb] flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-sky-100 text-[#38a5e6] flex items-center justify-center">
+          <div class="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-[#38a5e6] to-[#166ba1] text-white flex items-center justify-center shadow-md shadow-[#38a5e6]/30">
             <Compass class="w-5 h-5" />
+            <span class="absolute -top-1 -end-1 flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-80"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border border-white"></span>
+            </span>
           </div>
           <div>
-            <h3 class="text-base font-black text-slate-900">
-              {{ isRtl ? 'الخريطة التفاعلية للملاعب الرياضية' : 'Interactive Venues & Radar Map' }}
-            </h3>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-black text-slate-900">
+                {{ isRtl ? 'رادار الملاعب التفاعلي المباشر' : 'Live Interactive Venues Radar' }}
+              </h3>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>GPS LIVE</span>
+              </span>
+            </div>
             <p class="text-xs text-slate-500 font-medium">
-              {{ isRtl ? 'موقعك الحالي:' : 'Your Location:' }} <span class="text-[#258ecb] font-bold">{{ userCoords.city }}</span>
+              {{ isRtl ? 'موقعك النشط:' : 'Your Location:' }} <span class="text-[#258ecb] font-bold">{{ userCoords.city }}</span>
             </p>
           </div>
         </div>
-        <button
-          @click="close"
-          class="w-9 h-9 rounded-full bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
-        >
-          <X class="w-5 h-5" />
-        </button>
+
+        <div class="flex items-center gap-2 ms-auto">
+          <!-- Refresh GPS Button -->
+          <button
+            @click="detectLocation"
+            :disabled="isDetecting"
+            class="px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-[#38a5e6] text-slate-700 hover:text-[#38a5e6] text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            :title="isRtl ? 'تحديث إحداثيات الموقع عبر GPS' : 'Refresh GPS coordinates'"
+          >
+            <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin text-[#38a5e6]': isDetecting }" />
+            <span class="hidden sm:inline">{{ isDetecting ? (isRtl ? 'جاري التحديد...' : 'Detecting...') : (isRtl ? 'تحديث الموقع' : 'Refresh GPS') }}</span>
+          </button>
+
+          <!-- Direct Google Maps User Location Link -->
+          <a
+            :href="`https://www.google.com/maps?q=${userCoords.lat},${userCoords.lng}`"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-600 text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs"
+            :title="isRtl ? 'فتح موقعي الحالي في خرائط Google' : 'Open my location in Google Maps'"
+          >
+            <Navigation class="w-3.5 h-3.5 text-emerald-500" />
+            <span class="hidden sm:inline">{{ isRtl ? 'موقعي في Google Maps' : 'My GPS on Maps' }}</span>
+          </a>
+
+          <!-- Close Modal Button -->
+          <button
+            @click="close"
+            class="w-9 h-9 rounded-full bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <X class="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <!-- Radar / Tactical Map View in Soft Clean Aesthetic -->
@@ -36,13 +73,22 @@
         <div class="absolute w-[320px] h-[320px] rounded-full border border-sky-300/50 pointer-events-none"></div>
         <div class="absolute w-[160px] h-[160px] rounded-full border border-sky-400/60 pointer-events-none"></div>
 
-        <!-- Center: User Position Pin -->
+        <!-- Cardinal Directions Labels -->
+        <span class="absolute top-3 text-[10px] font-black text-slate-400 select-none">N</span>
+        <span class="absolute bottom-3 text-[10px] font-black text-slate-400 select-none">S</span>
+        <span class="absolute start-3 text-[10px] font-black text-slate-400 select-none">W</span>
+        <span class="absolute end-3 text-[10px] font-black text-slate-400 select-none">E</span>
+
+        <!-- Center: User Position Pin with Pulsing Beacon -->
         <div class="relative z-20 flex flex-col items-center">
-          <div class="w-7 h-7 rounded-full bg-[#38a5e6] ring-4 ring-[#38a5e6]/30 flex items-center justify-center shadow-lg shadow-[#38a5e6]/40">
-            <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
+          <div class="relative flex items-center justify-center">
+            <span class="absolute -inset-2 rounded-full bg-[#38a5e6]/40 animate-ping pointer-events-none"></span>
+            <div class="relative w-8 h-8 rounded-full bg-[#38a5e6] ring-4 ring-white shadow-xl shadow-[#38a5e6]/50 flex items-center justify-center">
+              <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
+            </div>
           </div>
           <span class="mt-1 px-3 py-0.5 rounded-full bg-white border border-slate-200 text-[10px] text-slate-800 font-extrabold shadow-xs">
-            {{ isRtl ? 'أنت هنا' : 'You are here' }}
+            {{ isRtl ? 'موقعك الفعلي' : 'You are here' }}
           </span>
         </div>
 
@@ -123,7 +169,7 @@
 import { ref } from 'vue';
 import { useLocalization } from '../../composables/useLocalization';
 import { useGeolocation } from '../../composables/useGeolocation';
-import { Compass, X, Navigation } from 'lucide-vue-next';
+import { Compass, X, Navigation, RefreshCw } from 'lucide-vue-next';
 
 const props = defineProps({
   isOpen: {
@@ -139,7 +185,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'select-stadium']);
 
 const { t, isRtl } = useLocalization();
-const { userCoords, calculateDistance } = useGeolocation();
+const { userCoords, calculateDistance, isDetecting, detectLocation } = useGeolocation();
 
 const highlightedStadium = ref(props.stadiums[0]);
 

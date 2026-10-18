@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-[#ebf2f7] text-slate-800 flex flex-col font-sans transition-all duration-300">
     <!-- Top Navigation Bar -->
-    <Navbar />
+    <Navbar @open-location="handleOpenLocation" />
 
     <!-- Main Content View Area -->
     <main class="flex-1">
@@ -25,12 +25,12 @@
     </main>
 
     <!-- Global Floating Bottom Navigation (Directly matching the reference image bottom bar) -->
-    <BottomNav @open-map="showGlobalMap = true" />
+    <BottomNav @open-map="handleOpenLocation" />
 
     <!-- Global Footer -->
     <Footer />
 
-    <!-- Global Tactical Radar Map Modal triggered from BottomNav -->
+    <!-- Global Tactical Radar Map Modal triggered from Navbar or BottomNav -->
     <MapPreviewModal
       :isOpen="showGlobalMap"
       :stadiums="stadiums"
@@ -43,6 +43,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useLocalization } from './composables/useLocalization';
+import { useGeolocation } from './composables/useGeolocation';
 import { useBookings } from './composables/useBookings';
 import Navbar from './components/layout/Navbar.vue';
 import BottomNav from './components/layout/BottomNav.vue';
@@ -57,8 +58,14 @@ import MapPreviewModal from './components/stadium/MapPreviewModal.vue';
 useLocalization();
 
 const { currentView, selectedStadium, stadiums, selectStadium } = useBookings();
+const { detectLocation } = useGeolocation();
 const discoveryRef = ref(null);
 const showGlobalMap = ref(false);
+
+const handleOpenLocation = () => {
+  detectLocation();
+  showGlobalMap.value = true;
+};
 
 const handleSelectStadiumFromMap = (stadium) => {
   showGlobalMap.value = false;
